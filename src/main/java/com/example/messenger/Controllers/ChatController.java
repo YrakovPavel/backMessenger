@@ -3,6 +3,7 @@ package com.example.messenger.Controllers;
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.ChatMember;
 import com.example.messenger.DB.User;
+import com.example.messenger.DB.dto.ChatPreviewDto;
 import com.example.messenger.DB.dto.SingleUserLoginDto;
 import com.example.messenger.DB.repos.ChatMemberRepository;
 import com.example.messenger.DB.repos.ChatRepository;
@@ -14,10 +15,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,5 +72,31 @@ public class ChatController {
         else{
             throw new IllegalArgumentException("You can't start chat with yourself!");
         }
+    }
+
+    @GetMapping("/chats/preview")
+    public ArrayList<ChatPreviewDto> getChatPreviews(@AuthenticationPrincipal UserDetails userDetails){
+
+        String userName = userDetails.getUsername();
+        Optional<User> user = Optional.of(userRepository.findByLogin(userName)
+                .orElseThrow(ResourceNotFoundException::new));
+        User userEntity = user.get();
+
+        ArrayList<ChatPreviewDto> previewChats = new ArrayList<>();
+
+        List<Long> chats = chatMemberRepository.findChatIdByUserId(userEntity.getId());
+        for (long chat: chats){
+            long chatFriendId = chatMemberRepository.findChatFriendId(chat, userEntity.getId());
+            Optional<User> chatFriend = userRepository.findById(chatFriendId);
+            if (!chatFriend.isEmpty()){
+                User chatFriendEntity = chatFriend.get();
+
+                previewChats.add(new ChatPreviewDto(
+                        chatFriendEntity.getLogin(),
+                        "http://localhost:8080/uploads/userAvatars/" + chatFriendEntity.getAvatarUrl(),
+                        "hello"));
+            }
+        }
+        return previewChats;
     }
 }

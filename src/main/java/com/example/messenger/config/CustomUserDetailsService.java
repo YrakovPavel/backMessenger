@@ -1,4 +1,4 @@
-package com.example.messenger.Security;
+package com.example.messenger.config;
 
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.repos.UserRepository;

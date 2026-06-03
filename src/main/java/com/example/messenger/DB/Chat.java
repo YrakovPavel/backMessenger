@@ -12,7 +12,7 @@ public class Chat {
     private Long id;
 
     @Column(nullable = false, length = 20)
-    String type;
+    private String type;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
