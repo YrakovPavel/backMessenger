@@ -1,16 +1,12 @@
 package com.example.messenger.DB.dto;
 
 public class MessageDto {
-    private Long id;
-    private String text;
     private Long chat_id;
+    private String text;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public MessageDto(Long chat_id, String text) {
+        this.chat_id = chat_id;
+        this.text = text;
     }
 
     public String getText() {

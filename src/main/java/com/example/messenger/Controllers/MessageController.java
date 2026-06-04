@@ -30,13 +30,13 @@ public class MessageController {
     private ChatRepository chatRepository;
 
     @PostMapping("/api/message/send")
-    public void sendMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MessageDto messageDto){
+    public void sendMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MessageDto message){
         Optional<User> user = Optional.of(userRepository.findByLogin(userDetails.getUsername())
                 .orElseThrow(ResourceNotFoundException::new));
-        Optional<Chat> chat = Optional.of(chatRepository.findById(messageDto.getChatId())
+        Optional<Chat> chat = Optional.of(chatRepository.findById(message.getChatId())
                 .orElseThrow(ResourceNotFoundException::new));
 
-        Message message = new Message(chat.get(), user.get() ,messageDto.getText());
-        messageRepository.save(message);
+        Message newMessage = new Message(chat.get(), user.get(), message.getText());
+        messageRepository.save(newMessage);
     }
 }

@@ -8,8 +8,6 @@ import com.example.messenger.DB.dto.SingleUserLoginDto;
 import com.example.messenger.DB.repos.ChatMemberRepository;
 import com.example.messenger.DB.repos.ChatRepository;
 import com.example.messenger.DB.repos.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -23,8 +21,6 @@ import java.util.Optional;
 
 @RestController
 public class ChatController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
     private ChatRepository chatRepository;
@@ -92,6 +88,7 @@ public class ChatController {
                 User chatFriendEntity = chatFriend.get();
 
                 previewChats.add(new ChatPreviewDto(
+                        chat,
                         chatFriendEntity.getLogin(),
                         "http://localhost:8080/uploads/userAvatars/" + chatFriendEntity.getAvatarUrl(),
                         "hello"));

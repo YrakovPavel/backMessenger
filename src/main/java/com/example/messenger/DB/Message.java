@@ -42,6 +42,9 @@ public class Message {
         this.text = text;
     }
 
+    public Message() {
+    }
+
     public Long getId() {
         return id;
     }
