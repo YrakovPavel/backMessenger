@@ -42,8 +42,7 @@ public class Message {
         this.text = text;
     }
 
-    public Message() {
-    }
+    public Message() {}
 
     public Long getId() {
         return id;
@@ -52,6 +51,10 @@ public class Message {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public User getSender() {return sender;}
+
+    public void setSender(User sender) {this.sender = sender;}
 
     public boolean isDeleted() {
         return isDeleted;
