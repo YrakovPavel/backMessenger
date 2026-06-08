@@ -2,11 +2,13 @@ package com.example.messenger.Controllers;
 
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.ChatMember;
+import com.example.messenger.DB.Message;
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.dto.ChatPreviewDto;
 import com.example.messenger.DB.dto.SingleUserLoginDto;
 import com.example.messenger.DB.repos.ChatMemberRepository;
 import com.example.messenger.DB.repos.ChatRepository;
+import com.example.messenger.DB.repos.MessageRepository;
 import com.example.messenger.DB.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -30,6 +32,8 @@ public class ChatController {
 
     @Autowired
     private ChatMemberRepository chatMemberRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @PostMapping("/api/chat/create/dialogue")
     @ResponseStatus(HttpStatus.OK)
@@ -86,12 +90,13 @@ public class ChatController {
             Optional<User> chatFriend = userRepository.findById(chatFriendId);
             if (!chatFriend.isEmpty()){
                 User chatFriendEntity = chatFriend.get();
+                Optional<String> message = messageRepository.findPreviewMessage(chat);
+                String messageToReturn = message.orElse("");
 
                 previewChats.add(new ChatPreviewDto(
-                        chat,
-                        chatFriendEntity.getLogin(),
+                        chat, chatFriendEntity.getLogin(),
                         "http://localhost:8080/uploads/userAvatars/" + chatFriendEntity.getAvatarUrl(),
-                        "hello"));
+                        messageToReturn));
             }
         }
         return previewChats;

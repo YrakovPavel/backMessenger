@@ -19,6 +19,10 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @GetMapping("/api/public/token")
+    public void loadToken(){
+    }
+
     @PostMapping("/api/public/registration")
     public void registration(@RequestBody User user){
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
