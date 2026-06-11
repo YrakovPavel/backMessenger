@@ -24,6 +24,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("commons-io:commons-io:2.16.1")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-session-jdbc-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")

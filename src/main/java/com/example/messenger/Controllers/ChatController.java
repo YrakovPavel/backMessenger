@@ -2,7 +2,6 @@ package com.example.messenger.Controllers;
 
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.ChatMember;
-import com.example.messenger.DB.Message;
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.dto.ChatPreviewDto;
 import com.example.messenger.DB.dto.SingleUserLoginDto;
@@ -42,15 +41,13 @@ public class ChatController {
         String userName = userDetails.getUsername();
         String friendName = userLogin.login();
         if (!userName.equals(friendName)) {
-            Optional<User> currentUser = Optional.of(userRepository.findByLogin(userName)
-                    .orElseThrow(ResourceNotFoundException::new));
+            User currentUser = userRepository.findByLogin(userName).orElseThrow(ResourceNotFoundException::new);
 
-            Optional<User> friendUser = Optional.of(userRepository.findByLogin(friendName)
-                    .orElseThrow(ResourceNotFoundException::new));
+            User friendUser = userRepository.findByLogin(friendName).orElseThrow(ResourceNotFoundException::new);
 
             //Проверка, нет ли у пользователей уже заведенного диалога
-            List<Long> currentChats = chatMemberRepository.findChatIdByUserId(currentUser.get().getId());
-            List<Long> friendChats = chatMemberRepository.findChatIdByUserId(friendUser.get().getId());
+            List<Long> currentChats = chatMemberRepository.findChatIdByUserId(currentUser.getId());
+            List<Long> friendChats = chatMemberRepository.findChatIdByUserId(friendUser.getId());
 
             if (!currentChats.isEmpty() && !friendChats.isEmpty()) {
                 currentChats.retainAll(friendChats);
@@ -63,8 +60,8 @@ public class ChatController {
 
             Chat chat = chatRepository.save(new Chat("dialogue"));
 
-            ChatMember currentMember = new ChatMember("owner", chat, currentUser.get());
-            ChatMember friendMember = new ChatMember("owner", chat, friendUser.get());
+            ChatMember currentMember = new ChatMember("owner", chat, currentUser);
+            ChatMember friendMember = new ChatMember("owner", chat, friendUser);
 
             chatMemberRepository.save(currentMember);
             chatMemberRepository.save(friendMember);
@@ -78,17 +75,15 @@ public class ChatController {
     public ArrayList<ChatPreviewDto> getChatPreviews(@AuthenticationPrincipal UserDetails userDetails){
 
         String userName = userDetails.getUsername();
-        Optional<User> user = Optional.of(userRepository.findByLogin(userName)
-                .orElseThrow(ResourceNotFoundException::new));
-        User userEntity = user.get();
+        User user = userRepository.findByLogin(userName).orElseThrow(ResourceNotFoundException::new);
 
         ArrayList<ChatPreviewDto> previewChats = new ArrayList<>();
 
-        List<Long> chats = chatMemberRepository.findChatIdByUserId(userEntity.getId());
+        List<Long> chats = chatMemberRepository.findChatIdByUserId(user.getId());
         for (long chat: chats){
-            long chatFriendId = chatMemberRepository.findChatFriendId(chat, userEntity.getId());
+            long chatFriendId = chatMemberRepository.findChatFriendId(chat, user.getId());
             Optional<User> chatFriend = userRepository.findById(chatFriendId);
-            if (!chatFriend.isEmpty()){
+            if (chatFriend.isPresent()){
                 User chatFriendEntity = chatFriend.get();
                 Optional<String> message = messageRepository.findPreviewMessage(chat);
                 String messageToReturn = message.orElse("");
