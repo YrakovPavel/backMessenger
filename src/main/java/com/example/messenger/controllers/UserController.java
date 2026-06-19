@@ -1,4 +1,4 @@
-package com.example.messenger.Controllers;
+package com.example.messenger.controllers;
 
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.dto.UserDto;
@@ -9,8 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 public class UserController {

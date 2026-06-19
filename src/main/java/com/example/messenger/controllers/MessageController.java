@@ -1,4 +1,4 @@
-package com.example.messenger.Controllers;
+package com.example.messenger.controllers;
 
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.Message;

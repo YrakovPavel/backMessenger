@@ -1,4 +1,4 @@
-package com.example.messenger.Controllers;
+package com.example.messenger.controllers;
 
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.ChatMember;
@@ -12,6 +12,7 @@ import com.example.messenger.DB.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +32,12 @@ public class ChatController {
 
     @Autowired
     private ChatMemberRepository chatMemberRepository;
+
     @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/api/chat/create/dialogue")
     @ResponseStatus(HttpStatus.OK)
@@ -65,6 +70,20 @@ public class ChatController {
 
             chatMemberRepository.save(currentMember);
             chatMemberRepository.save(friendMember);
+
+            messagingTemplate.convertAndSendToUser(currentUser.getLogin(),"/queue/chats",
+                    new ChatPreviewDto(
+                            chat.getId(),
+                            friendUser.getLogin(),
+                            "http://localhost:8080/uploads/userAvatars/" + friendUser.getAvatarUrl(),
+                            ""));
+
+            messagingTemplate.convertAndSendToUser(friendUser.getLogin(),"/queue/chats",
+                    new ChatPreviewDto(
+                            chat.getId(),
+                            currentUser.getLogin(),
+                            "http://localhost:8080/uploads/userAvatars/" + currentUser.getAvatarUrl(),
+                            ""));
         }
         else{
             throw new IllegalArgumentException("You can't start chat with yourself!");

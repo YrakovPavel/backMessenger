@@ -1,4 +1,4 @@
-package com.example.messenger.Controllers;
+package com.example.messenger.controllers;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

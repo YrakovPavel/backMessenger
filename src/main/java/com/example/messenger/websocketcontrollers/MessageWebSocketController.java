@@ -1,4 +1,4 @@
-package com.example.messenger.WebSocketControllers;
+package com.example.messenger.websocketcontrollers;
 
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.dto.MessageToReturnDto;
@@ -25,7 +25,7 @@ public class MessageWebSocketController {
     private ChatMemberRepository chatMemberRepository;
 
     @MessageMapping("/getMessage")
-    public void greeting(@AuthenticationPrincipal UserDetails userDetails, MessageToReturnDto message){
+    public void getMessage(@AuthenticationPrincipal UserDetails userDetails, MessageToReturnDto message){
         User user = userRepository.findByLogin(userDetails.getUsername())
                 .orElseThrow(ResourceNotFoundException::new);
         boolean userInChat = chatMemberRepository.existsByChat_IdAndUser_Id(message.chat_id(), user.getId());
