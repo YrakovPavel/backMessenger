@@ -2,6 +2,7 @@ package com.example.messenger.controllers;
 
 import com.example.messenger.DB.Chat;
 import com.example.messenger.DB.ChatMember;
+import com.example.messenger.DB.Message;
 import com.example.messenger.DB.User;
 import com.example.messenger.DB.dto.ChatPreviewDto;
 import com.example.messenger.DB.dto.SingleUserLoginDto;
@@ -17,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,14 +78,16 @@ public class ChatController {
                             chat.getId(),
                             friendUser.getLogin(),
                             "http://localhost:8080/uploads/userAvatars/" + friendUser.getAvatarUrl(),
-                            ""));
+                            "",
+                            Instant.now()));
 
             messagingTemplate.convertAndSendToUser(friendUser.getLogin(),"/queue/chats",
                     new ChatPreviewDto(
                             chat.getId(),
                             currentUser.getLogin(),
                             "http://localhost:8080/uploads/userAvatars/" + currentUser.getAvatarUrl(),
-                            ""));
+                            "",
+                            Instant.now()));
         }
         else{
             throw new IllegalArgumentException("You can't start chat with yourself!");
@@ -104,13 +108,20 @@ public class ChatController {
             Optional<User> chatFriend = userRepository.findById(chatFriendId);
             if (chatFriend.isPresent()){
                 User chatFriendEntity = chatFriend.get();
-                Optional<String> message = messageRepository.findPreviewMessage(chat);
-                String messageToReturn = message.orElse("");
+                Optional<Message> message = messageRepository.findPreviewMessage(chat);
+                String messageToReturn = "";
+                Instant messageTime = Instant.now();
+                if (message.isPresent()){
+                    messageToReturn = message.get().getText();
+                    messageTime = message.get().getCreatedAt();
+                }
+
 
                 previewChats.add(new ChatPreviewDto(
                         chat, chatFriendEntity.getLogin(),
                         "http://localhost:8080/uploads/userAvatars/" + chatFriendEntity.getAvatarUrl(),
-                        messageToReturn));
+                        messageToReturn,
+                        messageTime));
             }
         }
         return previewChats;

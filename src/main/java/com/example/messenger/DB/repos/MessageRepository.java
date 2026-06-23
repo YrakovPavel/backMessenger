@@ -13,6 +13,6 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
     @Query("SELECT ms FROM Message ms WHERE ms.chat.id=:chat_id")
     List<Message> findAllByChatId(@Param("chat_id") Long chat_id);
 
-    @Query("SELECT ms.text FROM Message ms WHERE ms.chat.id=:chat_id ORDER BY ms.id DESC LIMIT 1")
-    Optional<String> findPreviewMessage(@Param("chat_id") Long chat_id);
+    @Query("SELECT ms FROM Message ms WHERE ms.chat.id=:chat_id ORDER BY ms.id DESC LIMIT 1")
+    Optional<Message> findPreviewMessage(@Param("chat_id") Long chat_id);
 }
